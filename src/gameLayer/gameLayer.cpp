@@ -13,17 +13,21 @@
 
 struct GameData
 {
-	glm::vec2 rectPos = {100,100};
+	//glm::vec2 rectPos = {100,100};
+	glm::vec2 playerPos = { 100, 100 };
 
 }gameData;
 
 gl2d::Renderer2D renderer;
+gl2d::Texture playerTexture;
 
 bool initGame()
 {
 	//initializing stuff for the renderer
 	gl2d::init();
 	renderer.create();
+
+	playerTexture.loadFromFile(RESOURCES_PATH "frog.png", true);
 
 	//loading the saved data. Loading an entire structure like this makes savind game data very easy.
 	platform::readEntireFile(RESOURCES_PATH "gameData.data", &gameData, sizeof(GameData));
@@ -52,25 +56,29 @@ bool gameLogic(float deltaTime)
 #pragma endregion
 
 
-	if (platform::isButtonHeld(platform::Button::Left))
+	if (platform::isButtonHeld(platform::Button::A))
 	{
-		gameData.rectPos.x -= deltaTime * 100;
+		gameData.playerPos.x -= deltaTime * 200;
 	}
-	if (platform::isButtonHeld(platform::Button::Right))
+	if (platform::isButtonHeld(platform::Button::D))
 	{
-		gameData.rectPos.x += deltaTime * 100;
+		gameData.playerPos.x += deltaTime * 200;
 	}
-	if (platform::isButtonHeld(platform::Button::Up))
+	if (platform::isButtonHeld(platform::Button::W))
 	{
-		gameData.rectPos.y -= deltaTime * 100;
+		gameData.playerPos.y -= deltaTime * 200;
 	}
-	if (platform::isButtonHeld(platform::Button::Down))
+	if (platform::isButtonHeld(platform::Button::S))
 	{
-		gameData.rectPos.y += deltaTime * 100;
+		gameData.playerPos.y += deltaTime * 200;
 	}
 
-	gameData.rectPos = glm::clamp(gameData.rectPos, glm::vec2{0,0}, glm::vec2{w - 100,h - 100});
-	renderer.renderRectangle({gameData.rectPos, 100, 100}, Colors_Blue);
+	//gameData.rectPos = glm::clamp(gameData.rectPos, glm::vec2{0,0}, glm::vec2{w - 100,h - 100});
+	//renderer.renderRectangle({gameData.rectPos, 100, 100}, Colors_Blue);
+
+	gameData.playerPos = glm::clamp(gameData.playerPos, glm::vec2{ 0,0 }, glm::vec2{ w - 100,h - 100 });
+
+	renderer.renderRectangle({ gameData.playerPos, 100, 100}, playerTexture);
 
 	renderer.flush();
 
@@ -78,7 +86,7 @@ bool gameLogic(float deltaTime)
 	//ImGui::ShowDemoWindow();
 	ImGui::Begin("Test Imgui");
 
-	ImGui::DragFloat2("Positions", &gameData.rectPos[0]);
+	ImGui::DragFloat2("Positions", &gameData.playerPos[0]);
 
 	ImGui::End();
 
